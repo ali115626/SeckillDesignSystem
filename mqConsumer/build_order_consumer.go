@@ -63,10 +63,6 @@ func BuildOrderConsumer() error {
 		//-----------————————————————buildOrder()——————————————————————————————
 		//从下面开始  就buildOrder()
 		SellerService.BuildOrderProcess(orderInfo)
-
-
-
-
 		db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
 		if err != nil {
 			return errors.New(fmt.Sprintf("open database error,err=", err))
