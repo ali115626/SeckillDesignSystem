@@ -6,30 +6,22 @@ import (
 	"fmt"
 	"github.com/streadway/amqp"
 )
-
+//todo 这个就是一些公共的函数
 //   还是写死了      它只能消费创建订单的信息  这个应该将其弄成common的吧
 
 //一个common的消费者
 //	queueName :="orderMessage"
 func ReceiveMessageNormalConsumer(queueName string) string {
-
 	//TODO  要将这个改成一个函数吧
-
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-
 	if err != nil {
 		errResult := fmt.Sprintf("connect to the rabbitMq failed %s", err)
 		fmt.Println(errResult)
 		err = errors.New(errResult)
 		//return err
 	}
-
-	//failOnError(err, "Failed to connect to RabbitMQ")
-
 	defer conn.Close()
-
 	ch, err := conn.Channel()
-
 	if err != nil {
 		errResult := fmt.Sprintf("Failed to open a channel %s", err)
 		fmt.Println(errResult)
@@ -37,10 +29,7 @@ func ReceiveMessageNormalConsumer(queueName string) string {
 		err = errors.New(errResult)
 		//return err
 	}
-
-	//failOnError(err, "Failed to open a channel")
 	defer ch.Close()
-
 	q, err := ch.QueueDeclare(
 		queueName, // name
 		false,          // durable
@@ -49,22 +38,15 @@ func ReceiveMessageNormalConsumer(queueName string) string {
 		false,          // no-wait
 		nil,            // arguments
 	)
-
 	if err != nil {
 		errResult := fmt.Sprintf("Failed to declare a queue %s", err)
 		fmt.Println(errResult)
 
 		err = errors.New(errResult)
-		//return err
 	}
-	//failOnError(err, "Failed to declare a queue")
-
-	//Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args Table) (<-chan Delivery, error)
-	// When we return fro
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
-
 		"",    // consumer true,   // auto-ack
 		false, // exclusive
 		false, // no-local
@@ -73,24 +55,14 @@ func ReceiveMessageNormalConsumer(queueName string) string {
 		nil,
 	)
 	d := <-msgs
-
 	return string(d.Body)
-
 }
 
-
-
-
 func MqConsumerCommon(queueName string) interface{} {
-
 	conn := utitl.NewRabbitMQ().Conn
 	defer conn.Close()
 	ch := utitl.NewRabbitMQ().Ch
 	defer ch.Close()
-	//for {
-
-
-
 	q, err := ch.QueueDeclare(
 		queueName, // name
 		false,     // durable
@@ -99,13 +71,11 @@ func MqConsumerCommon(queueName string) interface{} {
 		false,     // no-wait
 		nil,       // arguments
 	)
-
 	if err != nil {
 		errResult := fmt.Sprintf("Failed to declare a queue %s", err)
 		fmt.Println(errResult)
 
 		err = errors.New(errResult)
-		//return err
 	}
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -122,20 +92,15 @@ func MqConsumerCommon(queueName string) interface{} {
 	return msgs
 }
 
-
-
-
 func DeadQueueConsumer(queueName string) <-chan amqp.Delivery{
 	conn := utitl.NewRabbitMQ().Conn
 	defer conn.Close()
 	ch := utitl.NewRabbitMQ().Ch
 	defer ch.Close()
-
 	delivery, err := ch.Consume(queueName, "", false, false, false, false, nil)
 	if err != nil {
 		fmt.Println("consume error,err=", err)
 	}
 	return delivery
-
 }
 

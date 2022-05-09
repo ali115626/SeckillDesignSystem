@@ -5,9 +5,10 @@ import (
 	"SeckillDesign/dao/redis"
 	"errors"
 	"fmt"
+	"github.com/streadway/amqp"
 )
 
-func DoRevertStock(msgs ) error {
+func DoRevertStockLogic(msgs amqp.Delivery) error {
 	orderNo := string(msgs.Body)
 	var status *string
 	var activityId *string

@@ -7,7 +7,6 @@ import (
 )
 
 func RevertRedisActivityStock(activityId string) error {
-
 	RedisConnection, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
 		return errors.New(fmt.Sprintf("redis.Dial err=", err))
@@ -20,5 +19,3 @@ func RevertRedisActivityStock(activityId string) error {
 	}
 	return nil
 }
-
-//fmt.Println(in)
