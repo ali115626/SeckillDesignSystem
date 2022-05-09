@@ -1,7 +1,7 @@
 package mqConsumer
 
 import (
-	"database/sql"
+	Dao "SeckillDesign/dao/mysql"
 	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
@@ -24,11 +24,6 @@ func OrderDeductConsumer() {
 	delivery := MqConsumerCommon(queueName)
 	orderInfo := &OrderInfo{}
 	deliveryMsg := delivery.(<-chan amqp.Delivery)
-	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
-	if err != nil {
-		fmt.Println("open database error,err=", err)
-	}
-
 	//todo  没关系的  你的函数其实一直阻塞在这里
 	//TODO 把这个程序开始在main函数中就运行出来   初始化 就一直等着呗
 
@@ -46,18 +41,15 @@ func OrderDeductConsumer() {
 		//
 		//}
 		activityId := orderInfo.ActivityId
+		//todo  这里就是扣减库存成功
+		//整成并发？
 
-		//_, err = db.Exec("insert into CommodityTable(commodityName,price,describeInfo,updateAt) values(?,?,?,?)", commodityName, price, describeInfo, updateAt)
-		//if err != nil {
-		//	fmt.Println("exec failed, err=", err)
-		//	return
-		//}
-		//fmt.Fprintf(w, "商品上传成功！")
-		//todo  这里就是库建库存成功
-		_, err = db.Exec("update ActivityTable set locked_stock=locked_stock-1 WHERE activityId=?", activityId)
-		if err != nil {
-			fmt.Println("exec failed, err=", err)
+		err =Dao.DeductStock(activityId)
+
+		if err!=nil{
+			fmt.Println("Deduct Stock error,err=",err)
 		}
 
 	}
+
 }
