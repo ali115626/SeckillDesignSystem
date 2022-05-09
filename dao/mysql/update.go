@@ -26,9 +26,7 @@ func RevertActivityTableStock(activityId string) error {
 	return nil
 }
 
-
 func DeductActivityTableStock(activityId string) error {
-
 	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
 	if err != nil {
 		//fmt.Println("open database error,err=", err)
@@ -64,6 +62,24 @@ func LockActivityTableStock(orderInfo constant.OrderInfo) error {
 		return errors.New(
 			"库存扣减失败！") //前端发现你这个东西等于0了   然后就开始  todo 这样的话  也没有必要扣减数据库了
 	}
+	return nil
+}
+
+
+func ChangeOrderTablePayStatus(orderNo string) error{
+	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
+	if err != nil {
+		fmt.Println("open database error,err=", err)
+		return errors.New(fmt.Sprintf("ChangeOrderTablePayStatus | open database error,err=", err))
+	}
+	//2代表付款成功
+	_, err = db.Exec("update OrderInfoTable set status=2 WHERE orderId=?", orderNo)
+	if err != nil {
+		fmt.Println("exec failed, err=", err)
+
+		return errors.New(fmt.Sprintf("ChangeOrderTablePayStatus | exec failed, err=", err))
+	}
+//	否则就是改变订单状态成功！
 	return nil
 
 

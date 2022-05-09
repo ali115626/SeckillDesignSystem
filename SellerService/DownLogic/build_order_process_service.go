@@ -1,4 +1,4 @@
-package SellerService
+package DownLogic
 
 import (
 	"SeckillDesign/constant"
@@ -10,7 +10,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func BuildOrderProcess(msg amqp.Delivery)error{
+func BuildOrderProcessService(msg amqp.Delivery)error{
 	message := string(msg.Body)
 	//	再去unMarshal一下  unmarshal 到 orderInfo中
 	orderInfo := constant.OrderInfo{}

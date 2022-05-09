@@ -17,3 +17,22 @@ type OrderInfo struct {
 	ActivityId   string
 	Status       int
 }
+
+
+type ActivityInfo struct {
+	ActivityName      string
+	CommodityId       string
+	OriginPrice       string
+	Price             string
+	Stocks            string
+	ActivityStartTime string
+}
+
+
+
+type CommodityInfo struct {
+	UpdateAt      string `json:"updateAt"`
+	CommodityName string `json:"commodityName"`
+	Price         string `json:"price"`
+	DescribeInfo  string `json:"describeInfo"`
+}

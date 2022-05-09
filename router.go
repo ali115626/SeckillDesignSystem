@@ -27,8 +27,13 @@ func main() {
 
 	http.HandleFunc("/ReleaseActivity", SellerService.ReleaseActivity)
 
+
+	http.HandleFunc("/ProcessPayDoneOrder", SellerService.ProcessPayDoneOrder)
+
+	//ProcessPayDoneOrder
+
 	//UploadCommodity
-	http.HandleFunc("/UploadCommodity", SellerService.UploadCommodity)
+	http.HandleFunc("/UploadCommodity", SellerService.ReleaseCommodity)
 	//PullActivityInfo
 
 	http.HandleFunc("/PullActivityInfo", SellerService.PullActivityInfo)

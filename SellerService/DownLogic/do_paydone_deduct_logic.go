@@ -1,4 +1,4 @@
-package SellerService
+package DownLogic
 
 import (
 	"SeckillDesign/constant"

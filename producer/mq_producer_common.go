@@ -45,15 +45,7 @@ func SendMQCommon(body []byte, queueName string) error {
 		err = errors.New(errResult)
 		return err
 	}
-	//err = ch.Publish(
-	//	         "",     // exchange
-	//	       q.Name, // routing key
-	//	         false,  // mandatory
-	//	       false,  // immediate
-	//	     amqp.Publishing{
-	//	            //ContentType: "text/plain",
-	//	           Body:        []byte(body),
-	//	       })
+
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key

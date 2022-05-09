@@ -1,7 +1,7 @@
 package mqConsumer
 
 import (
-	"SeckillDesign/SellerService"
+	"SeckillDesign/SellerService/DownLogic"
 	"fmt"
 	"github.com/streadway/amqp"
 )
@@ -21,7 +21,7 @@ func OrderDeductConsumer() {
 	delivery := MqConsumerCommon(queueName)
 	deliveryMsg := delivery.(<-chan amqp.Delivery)
 	for msg := range deliveryMsg {
-		err :=SellerService.DoPayDoneDeductLogic(msg)
+		err :=DownLogic.DoPayDoneDeductLogic(msg)
 		if err !=nil{
 			err=msg.Reject(true)
 			if err !=nil{
