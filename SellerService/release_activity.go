@@ -1,7 +1,9 @@
 package SellerService
 
 import (
-	"database/sql"
+	"SeckillDesign/constant"
+	Dao "SeckillDesign/dao/mysql"
+	//"database/sql"
 	"fmt"
 	"net/http"
 	//"database/sql"
@@ -9,11 +11,14 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+
+
 func ReleaseActivity(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		return
 	}
+
 	requestMap := r.Form
 	activityName := requestMap["activityName"][0]
 	commodityId := requestMap["commodityId"][0]
@@ -22,18 +27,23 @@ func ReleaseActivity(w http.ResponseWriter, r *http.Request) {
 	stocks := requestMap["stocks"][0]
 	availableStock := requestMap["availableStock"][0]
 	activityStartTime := requestMap["activityStartTime"][0]
+	//todo 这个endTime不用传过来
 	activityEndTime := requestMap["activityEndTime"][0]
-	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
-	if err != nil {
-		fmt.Println("open database error,err=", err)
-		//TODO  iphone双11抢购  起的名字总不能是一样的吧
-		//	TODO 这里面用hash值去校验用户两次的内容是否一样
-		//TODO 其实只要仅校验一下名字就行了   把名字放上索引吧 名字太长了  这里需要数据库的知识
+
+	activityInfo :=constant.ActivityInfo{
+		ActivityName:activityName,
+		CommodityId:commodityId,
+		OriginPrice:originPrice,
+		Price:price,
+		Stocks:stocks,
+		AvailableStock:availableStock,
+		ActivityStartTime:activityStartTime,
+		ActivityEndTime:activityEndTime,
 	}
-	_, err = db.Exec("insert into ActivityTable(activityName,commodityId,originPrice,price,stocks,activityStartTime,activityEndTime,available_stock) values(?,?,?,?,?,?,?,?)", activityName, commodityId, originPrice, price, stocks, activityStartTime, activityEndTime, availableStock)
-	if err != nil {
-		fmt.Println("exec failed, err=", err)
-		//	todo 我就奇怪了   万一我在这边一直点下去怎么办   代码层校验是否重复上传   怎么办呢
+
+	err =Dao.InsertActivityInfo(activityInfo)
+	if err != nil{
+		return
 	}
 	fmt.Fprintf(w, "上传活动信息正常！")
 }

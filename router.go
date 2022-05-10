@@ -4,6 +4,8 @@ import (
 	"SeckillDesign/SellerService"
 	"SeckillDesign/mqConsumer"
 
+	//"SeckillDesign/mqConsumer"
+
 	//"SeckillDesign/orderSystem"
 	"fmt"
 	"net/http"
@@ -18,44 +20,41 @@ import (
 //}
 
 func main() {
-	err := mqConsumer.BuildOrderConsumer()
-	if err != nil {
-		fmt.Println(err)
-	}
+	//todo  其实这些服务不应该放到一起  吧
+	//mqConsumer.BuildOrderConsumer()
+    //
+	 go mqConsumer.BuildOrderConsumer()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//////todo 感觉这个有点问题  这个是不应该放在一起的吧
+	//这个是单独运行的东西  你启动后 直接监听 listen就行了
+	go mqConsumer.PayStatusCheckListener()
 
-	mqConsumer.PayStatusCheckListener()
+	go mqConsumer.OrderDeductConsumer()
 
+
+	//todo 你这个检不检查错误有啥用呢
+	//todo 这两个接口是商家侧
 	http.HandleFunc("/ReleaseActivity", SellerService.ReleaseActivity)
-
-
-	http.HandleFunc("/ProcessPayDoneOrder", SellerService.ProcessPayDoneOrder)
-
-	//ProcessPayDoneOrder
-
 	//UploadCommodity
 	http.HandleFunc("/UploadCommodity", SellerService.ReleaseCommodity)
 	//PullActivityInfo
-
 	http.HandleFunc("/PullActivityInfo", SellerService.PullActivityInfo)
-
 	//GetCommodityInfo
 	http.HandleFunc("/GetCommodityInfo", SellerService.GetCommodityInfo)
-
 	//DoSecKill
-	http.HandleFunc("/DoSecKill", SellerService.DoSecKill)
-
-	//CreateOrder
+	http.HandleFunc("/DoSecKill", SellerService.DoSecKill)//这个还是待压测
 
 	http.HandleFunc("/CreateOrder", SellerService.CreateOrder)
 
-	//SearchOrderInfo
 	http.HandleFunc("/SearchOrderInfo", SellerService.SearchOrderInfo)
+	//CreateOrder
+	//SearchOrderInfo
+	http.HandleFunc("/ProcessPayDoneOrder", SellerService.ProcessPayDoneOrder)
+	//ProcessPayDoneOrder
 
-	//BuildOrder
-
-	//http.HandleFunc("/BuildOrder",orderSystem.BuildOrder)
-
-	err = http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("ListenAndServe: ", err)
 	}

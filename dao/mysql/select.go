@@ -150,5 +150,39 @@ func QueryPriceActivityTable(activityId string)(string,string,error){
 		return "","",errors.New(fmt.Sprintf("select paper_content error,err=",err))
 	}
 	return activityName,price,nil
+}
 
+
+
+func ShowOrderInfo(orderId string)(*constant.OrderInfoShow,error){
+	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
+	if err != nil {
+		fmt.Println("open database error,err=", err)
+	}
+	var status string
+	var userId string
+	var activityName string
+	var orderPrice string
+	var createAt string
+	err = db.QueryRow("SELECT userId,activityName,orderPrice,status,createAt FROM OrderInfoTable WHERE orderId=?", orderId).Scan(&userId, &activityName, &orderPrice, &status, &createAt)
+	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
+	if err != nil {
+		return nil,errors.New(fmt.Sprintf("select paper_content error,err=",err))
+	}
+
+
+	if status == "1" {
+		status = "未付款"
+	} else if status == "0" {
+		status = "订单出错，创建订单失败"
+	}
+
+	OrderInfoResult := constant.OrderInfoShow{}
+	OrderInfoResult.UserId = userId
+	OrderInfoResult.OrderPrice = orderPrice
+	OrderInfoResult.Status = status
+
+	OrderInfoResult.CreateAt = createAt
+
+	return &OrderInfoResult,nil
 }

@@ -16,6 +16,7 @@ type OrderInfo struct {
 	OrderPrice   string
 	ActivityId   string
 	Status       int
+	CreateAt     string
 }
 
 
@@ -25,14 +26,34 @@ type ActivityInfo struct {
 	OriginPrice       string
 	Price             string
 	Stocks            string
+	AvailableStock    string
 	ActivityStartTime string
+	ActivityEndTime   string
+
 }
-
-
 
 type CommodityInfo struct {
 	UpdateAt      string `json:"updateAt"`
 	CommodityName string `json:"commodityName"`
 	Price         string `json:"price"`
 	DescribeInfo  string `json:"describeInfo"`
+}
+
+
+type CommodityInfo2 struct {
+	commodityId   string  `json:"commodityId""`
+	UpdateAt      string `json:"updateAt"`
+	CommodityName string `json:"commodityName"`
+	Price         string `json:"price"`
+	DescribeInfo  string `json:"describeInfo"`
+}
+
+type OrderInfoShow struct{
+	OrderId      string
+	UserId       string
+	ActivityName string
+	OrderPrice   string
+	ActivityId   string
+	Status       string
+	CreateAt     string
 }

@@ -1,7 +1,7 @@
 package SellerService
 
 import (
-	"database/sql"
+	Dao "SeckillDesign/dao/mysql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -18,41 +18,17 @@ type OrderInfo struct {
 }
 
 func SearchOrderInfo(w http.ResponseWriter, r *http.Request) {
-
 	err := r.ParseForm()
 	if err != nil {
 		return
 	}
 	requestMap := r.Form
 	orderId := requestMap["orderId"][0]
-	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
-	if err != nil {
-		fmt.Println("open database error,err=", err)
-	}
-	var userId string
-	var activityName string
-	var orderPrice string
-	var status string
-	var createAt string
-
-	err = db.QueryRow("SELECT userId,activityName,orderPrice,status,createAt FROM OrderInfoTable WHERE orderId=?", orderId).Scan(&userId, &activityName, &orderPrice, &status, &createAt)
-	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("select  paper_content  error")
+	OrderInfoResult,err :=Dao.ShowOrderInfo(orderId)
+	if err != nil{
+		fmt.Println("Show OrderInfo error,err=",err)//正常的话应该打印到log日志文件中吧
 		return
 	}
-	if status == "1" {
-		status = "未付款"
-	} else if status == "0" {
-		status = "订单出错，创建订单失败"
-	}
-	OrderInfoResult := OrderInfo{}
-	OrderInfoResult.UserId = userId
-	OrderInfoResult.OrderPrice = orderPrice
-	OrderInfoResult.Status = status
-	OrderInfoResult.CreateAt = createAt
-	//OrderInfoResult.
 	marshalResult, err := json.Marshal(OrderInfoResult)
 	if err != nil {
 		fmt.Println(err)

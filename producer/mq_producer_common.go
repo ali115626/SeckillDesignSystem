@@ -55,6 +55,10 @@ func SendMQCommon(body []byte, queueName string) error {
 			//ContentType: "text/plain",
 			Body: body,
 		})
+	if err !=nil{
+		log.Printf("ch.Publish error!!!!!!")
+
+	}
 	log.Printf(" [x] Sent %s", body)
 	//failOnError(err, "Failed to publish a message")
 

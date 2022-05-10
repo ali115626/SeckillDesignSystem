@@ -2,8 +2,6 @@ package DownLogic
 
 import (
 	Dao "SeckillDesign/dao/mysql"
-	"SeckillDesign/dao/redis"
-	"errors"
 	"fmt"
 	"github.com/streadway/amqp"
 )
@@ -20,10 +18,10 @@ func DoRevertStockLogic(msgs amqp.Delivery) error {
 			fmt.Println()
 		}
 		//	TODO  订单未支付   你肯定要revert一下redis吧
-		err = redis.RevertRedisActivityStock(activityID)
-		if err != nil{
-			fmt.Println(errors.New(fmt.Sprintf("Redis revert stock error,err=",err)))
-		}
+		//err = redis.RevertRedisActivityStock(activityID)
+		//if err != nil{
+		//	fmt.Println(errors.New(fmt.Sprintf("Redis revert stock error,err=",err)))
+		//}
 		//	todo 从限购名单中移除
 	}
 

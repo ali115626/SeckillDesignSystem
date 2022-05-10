@@ -10,11 +10,13 @@ import (
 	"github.com/streadway/amqp"
 )
 
+
 func BuildOrderProcessService(msg amqp.Delivery)error{
 	message := string(msg.Body)
 	//	再去unMarshal一下  unmarshal 到 orderInfo中
+	fmt.Println("message=",message)
 	orderInfo := constant.OrderInfo{}
-	err := json.Unmarshal([]byte(message), orderInfo)
+	err := json.Unmarshal([]byte(message), &orderInfo)
 	if err != nil {
 		return errors.New(fmt.Sprintf("json unmarshal orderInfo err,err=", err))
 	}
