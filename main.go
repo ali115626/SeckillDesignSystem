@@ -2,11 +2,6 @@ package main
 
 import (
 	"SeckillDesign/SellerService"
-	"SeckillDesign/mqConsumer"
-
-	//"SeckillDesign/mqConsumer"
-
-	//"SeckillDesign/orderSystem"
 	"fmt"
 	"net/http"
 )
@@ -22,18 +17,14 @@ import (
 func main() {
 	//todo  其实这些服务不应该放到一起  吧
 	//mqConsumer.BuildOrderConsumer()
-    //
-	 go mqConsumer.BuildOrderConsumer()
+	// go mqConsumer.BuildOrderConsumer()
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
 	//////todo 感觉这个有点问题  这个是不应该放在一起的吧
 	//这个是单独运行的东西  你启动后 直接监听 listen就行了
-	go mqConsumer.PayStatusCheckListener()
-
-	go mqConsumer.OrderDeductConsumer()
-
-
+	//go mqConsumer.PayStatusCheckListener()
+	//go mqConsumer.OrderDeductConsumer()
 	//todo 你这个检不检查错误有啥用呢
 	//todo 这两个接口是商家侧
 	http.HandleFunc("/ReleaseActivity", SellerService.ReleaseActivity)
@@ -54,7 +45,7 @@ func main() {
 	http.HandleFunc("/ProcessPayDoneOrder", SellerService.ProcessPayDoneOrder)
 	//ProcessPayDoneOrder
 
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		fmt.Println("ListenAndServe: ", err)
 	}
