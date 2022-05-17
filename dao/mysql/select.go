@@ -9,12 +9,78 @@ import (
 )
 
 
+
+func QueryActivityFromDataBase(activityId string) (*constant.ActivityInfoForRedis,error){
+
+	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
+	if err != nil {
+		fmt.Println("open database error,err=", err)
+	}
+		var ActivityName string
+		var OriginPrice string
+		var Price string
+		var Stocks string
+		var AvailableStock string
+		var ActivityStartTime string
+
+	//commodityId
+	err = db.QueryRow("SELECT ActivityName,OriginPrice,Price,Stocks,AvailableStock,ActivityStartTime FROM ActivityTable WHERE activityId=?", activityId).Scan(&ActivityName,&OriginPrice,&Price,&Stocks,&AvailableStock,&ActivityStartTime)
+	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
+	if err != nil {
+		return nil,errors.New(fmt.Sprintf("Query ActivityTable error,err=",err))
+	}
+	return &constant.ActivityInfoForRedis{
+		ActivityName:      ActivityName,
+		OriginPrice:       OriginPrice,
+		Price:             Price,
+		Stocks:            Stocks,
+		AvailableStock:    AvailableStock,
+		ActivityStartTime: ActivityStartTime,
+	},nil
+
+
+
+}
+
+
+
+func QueryActivityAllTableFromActivityId(activityId string)(*constant.ActivityInfoForRedis,error){
+	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
+	if err != nil {
+		fmt.Println("open database error,err=", err)
+	}
+	var activityName string
+	var originPrice string
+	var price string
+	var stocks string
+	var activityStartTime string
+	var availableStock string
+	//activityName      | commidtyId | originPrice | price | stocks | activityStartTime   | activityEndTime     | locked_stock | available_stock
+	err = db.QueryRow("SELECT activityName,originPrice,price,stocks,activityStartTime,available_stock FROM ActivityTable WHERE activityId=?", activityId).Scan(&activityName,&originPrice,&price,&stocks,&activityStartTime,&availableStock)
+	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
+	if err != nil {
+		return nil,errors.New(fmt.Sprintf("select FROM ActivityTable error,err=",err))
+	}
+	return &constant.ActivityInfoForRedis{
+		ActivityName:      activityName,
+		OriginPrice:       originPrice,
+		Price:             price,
+		AvailableStock: availableStock,
+		ActivityStartTime:    activityStartTime,
+	},nil
+
+}
+
+
+
+
+
+
 func SearchCommodityDetailFromTable(commodityId string) (*constant.CommodityInfo,error) {
 	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
 	if err != nil {
 		fmt.Println("open database error,err=", err)
 	}
-
 	var updateAt string
 	var commodityName string
 	var price string
@@ -32,9 +98,10 @@ func SearchCommodityDetailFromTable(commodityId string) (*constant.CommodityInfo
 	commodityInfo.UpdateAt = updateAt
 	commodityInfo.Price = price
 	return &commodityInfo,nil
-
-
 }
+
+
+
 
 func QueryCommodityIdFromActivityTable(activityId string) (string,error){
 	var commodityId string
@@ -42,7 +109,8 @@ func QueryCommodityIdFromActivityTable(activityId string) (string,error){
 	if err != nil {
 		fmt.Println("open database error,err=", err)
 	}
-	err = db.QueryRow("SELECT commodityId FROM ActivityTable WHERE activityId=?", activityId).Scan(&commodityId)
+	//commodityId
+	err = db.QueryRow("SELECT commidtyId FROM ActivityTable WHERE activityId=?", activityId).Scan(&commodityId)
 	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
 	if err != nil {
 		return "",errors.New(fmt.Sprintf("select paper content error,err=",err))
@@ -113,7 +181,7 @@ func QueryDetailsFromOrderInfoTable(orderNo string)(*constant.OrderInfo,error){
 
 
 
-func QueryOrderInfoStatus(orderNo string)(*string,*string,error){
+func QueryOrderInfoStatus(orderNo string)(string,string,string,error){
 	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
 	if err != nil {
 		fmt.Println("open database error,err=", err)
@@ -126,14 +194,15 @@ func QueryOrderInfoStatus(orderNo string)(*string,*string,error){
 	}
 	var activityId string
 	var status string
-	err = db.QueryRow("SELECT activityId,status FROM OrderInfoTable WHERE orderId=?", orderNo).Scan(&activityId, &status)
+	var userId string
+	err = db.QueryRow("SELECT activityId,status,userId FROM OrderInfoTable WHERE orderId=?", orderNo).Scan(&activityId, &status,&userId)
 	//发现即使db.QueryRow(）这里面ELECT delete_status FROM blog_info WHERE title_id SQL语句出问题了  也不会报错
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("select  paper_content  error")
-		return nil,nil,err
+		return "","","",err
 	}
-	return &activityId,&status,nil
+	return activityId,status,userId,nil
 }
 
 func QueryPriceActivityTable(activityId string)(string,string,error){
@@ -186,3 +255,45 @@ func ShowOrderInfo(orderId string)(*constant.OrderInfoShow,error){
 
 	return &OrderInfoResult,nil
 }
+
+
+func GetCommodityIdFromActivityTable(activityId string) (string,error){
+
+	db, err := sql.Open("mysql", "root:123456@/seckill_scheme?charset=utf8")
+	if err != nil {
+		return "",errors.New(fmt.Sprintf("open database error,err=", err))
+	}
+	var commodityId string
+	//todo 这个时候去search这个表格没有关系  因为商品活动的信息你已经  预热到 redis里面了  但是先去数据库里面查吧
+	err = db.QueryRow("SELECT commidtyId FROM ActivityTable WHERE activityId=?", activityId).Scan(&commodityId)
+	if err != nil {
+		return "",errors.New(fmt.Sprintf("select paper_content error,err=",err))
+	}
+	return commodityId,nil
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,6 +2,9 @@ package main
 
 import (
 	"SeckillDesign/SellerService"
+	OperateService "SeckillDesign/SellerService/OperateService"
+
+	//OperateService "SeckillDesign/SellerService/OperateService"
 	"fmt"
 	"net/http"
 )
@@ -16,17 +19,18 @@ import (
 
 func main() {
 	//todo  其实这些服务不应该放到一起  吧
-	//mqConsumer.BuildOrderConsumer()
-	// go mqConsumer.BuildOrderConsumer()
+	//mqConsumerService.BuildOrderConsumer()
+	// go mqConsumerService.BuildOrderConsumer()
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
 	//////todo 感觉这个有点问题  这个是不应该放在一起的吧
 	//这个是单独运行的东西  你启动后 直接监听 listen就行了
-	//go mqConsumer.PayStatusCheckListener()
-	//go mqConsumer.OrderDeductConsumer()
+	//go mqConsumerService.PayStatusCheckListener()
+	//go mqConsumerService.OrderDeductConsumer()
 	//todo 你这个检不检查错误有啥用呢
 	//todo 这两个接口是商家侧
+	//http.HandleFunc("/hello", SellerService.ProcessHello)
 	http.HandleFunc("/ReleaseActivity", SellerService.ReleaseActivity)
 	//UploadCommodity
 	http.HandleFunc("/UploadCommodity", SellerService.ReleaseCommodity)
@@ -45,7 +49,25 @@ func main() {
 	http.HandleFunc("/ProcessPayDoneOrder", SellerService.ProcessPayDoneOrder)
 	//ProcessPayDoneOrder
 
-	err := http.ListenAndServe(":8081", nil)
+
+	//WarmUp
+
+	http.HandleFunc("/WarmUp", OperateService.WarmUp)
+
+
+	//QueryActivityFromRedis
+
+	//ShowActivityInfo
+
+	http.HandleFunc("/ShowActivityInfo", SellerService.ShowActivityInfo)
+
+	//ShowCommodityInfo
+	http.HandleFunc("/ShowCommodityInfo", SellerService.ShowCommodityInfo)
+
+
+	//err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+
 	if err != nil {
 		fmt.Println("ListenAndServe: ", err)
 	}

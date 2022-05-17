@@ -23,7 +23,11 @@ func DoSecKill(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	requestMap := r.Form
-	commidtyId := requestMap["commidtyId"][0]
+	fmt.Println("r.Form=",r.Form)
+	commodityId := requestMap["commodityId"][0]
+
+	userId := requestMap["userId"][0]
+
 	//TODO 这里面加一个用户是不是之前已经购买过的代码逻辑
 	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
@@ -31,7 +35,20 @@ func DoSecKill(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	commodityStockKey := "commodity:stock:" + commidtyId
+	commodityStockKey := "commodity:stock:" + commodityId
+
+
+	commodityBuyUser := "commodity:BuyUser"+commodityId
+
+	isRepeat, err := redis.Int(conn.Do("sismember",commodityBuyUser, userId))
+	if err != nil {
+		fmt.Println("sismember key error,err=", err)
+	}
+
+	if isRepeat==1{
+		fmt.Fprintf(w,"您已经秒杀成功，每个人只有一次机会！")
+		return
+	}
 	const lockScript = `if redis.call('exists',KEYS[1]) == 1 then
 		               local stock = tonumber(redis.call('get', KEYS[1])) 
 		               if( stock <=0 ) then
@@ -52,8 +69,13 @@ func DoSecKill(w http.ResponseWriter, r *http.Request) {
 	if in < 0 {
 		fmt.Println("抢购失败，商品库存为 stock=", in)
 		return
+
 	} else {
 		fmt.Println("抢购成功，商品库存为 stock=", in)
+		_, err := conn.Do("sadd",commodityBuyUser, userId)
+		if err != nil {
+			fmt.Println("sismember key error,err=", err)
+		}
 		return
 	}
 

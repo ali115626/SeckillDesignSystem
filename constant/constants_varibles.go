@@ -29,7 +29,6 @@ type ActivityInfo struct {
 	AvailableStock    string
 	ActivityStartTime string
 	ActivityEndTime   string
-
 }
 
 type CommodityInfo struct {
@@ -56,4 +55,17 @@ type OrderInfoShow struct{
 	ActivityId   string
 	Status       string
 	CreateAt     string
+}
+
+
+
+
+//activityName,originPrice,price,stocks,activityStartTime,available_stock
+type ActivityInfoForRedis struct {
+	ActivityName      string
+	OriginPrice       string
+	Price             string
+	Stocks            string
+	AvailableStock    string
+	ActivityStartTime string
 }

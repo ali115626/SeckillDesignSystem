@@ -1,17 +1,28 @@
-FROM golang:latest
-#这个是最底层的image
+FROM golang:alpine
 
-#MAINTAINER yuy "test@163.com"
+# 为我们的镜像设置必要的环境变量
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 
-RUN mkdir /webapp
+# 移动到工作目录：/build
+WORKDIR /build
 
+# 将代码复制到容器中
+COPY . .
 
-WORKDIR /webapp
+# 将我们的代码编译成二进制可执行文件app
+RUN go build -o app .
 
-COPY . /webapp
-RUN go run main.go
+# 移动到用于存放生成的二进制文件的 /dist 目录
+WORKDIR /dist
 
-EXPOSE 8081
+# 将二进制文件从 /build 目录复制到这里
+RUN cp /build/app .
 
-#RUN #chmod +x router  哟这个是改变文件的？看来有命令出错了 他就没办法建立images了
-#ENTRYPOINT ["./router"]
+# 声明服务端口
+EXPOSE 8889
+
+# 启动容器时运行的命令
+CMD ["/dist/app"]

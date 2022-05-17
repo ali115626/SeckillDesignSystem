@@ -43,6 +43,7 @@ func ReleaseActivity(w http.ResponseWriter, r *http.Request) {
 
 	err =Dao.InsertActivityInfo(activityInfo)
 	if err != nil{
+		fmt.Println("Insert Activity Info error ,err=",err)
 		return
 	}
 	fmt.Fprintf(w, "上传活动信息正常！")
