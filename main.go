@@ -64,6 +64,8 @@ func main() {
 	//ShowCommodityInfo
 	http.HandleFunc("/ShowCommodityInfo", SellerService.ShowCommodityInfo)
 
+	//显示倒计时CutDownWarmUp
+	http.HandleFunc("/CutDownWarmUp", OperateService.CutDownWarmUp)
 
 	//err := http.ListenAndServe(":8080", nil)
 	err := http.ListenAndServe(":8080", nil)

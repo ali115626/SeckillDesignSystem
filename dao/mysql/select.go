@@ -91,7 +91,7 @@ func SearchCommodityDetailFromTable(commodityId string) (*constant.CommodityInfo
 	if err != nil {
 		//fmt.Println(err)
 		//fmt.Println("select  paper_content  error")
-		return nil,errors.New(fmt.Sprintf("select paper_content error,err="))
+		return nil,errors.New(fmt.Sprintf("select paper_content error,err=",err))
 	}
 	commodityInfo.CommodityName = commodityName
 	commodityInfo.DescribeInfo = describeInfo
